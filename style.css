@@ -1,0 +1,31 @@
+body{
+    font-size:16px;
+    font-family:"Trebuchet MS", Helvetica, sans-serif;
+    #background-color:white;
+    background-image:url("https://i.stack.imgur.com/jGlzr.png");
+}
+.span1{
+    color:#00003D;
+}
+#text_content{
+    padding-left:0px;
+    padding-right:0px;
+    color:black;
+}
+#game_table{
+    border: 1px solid black;
+}
+td{
+    text-align:center;
+    border:1px solid black;
+}
+#gameButton{
+    text-align:center;
+}
+#timer{
+    color:blue;
+}
+#statTable{
+    color:blue;
+	font-size:20px;
+}
