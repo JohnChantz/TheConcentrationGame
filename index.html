@@ -1,0 +1,197 @@
+<!-- it21368_assigment1(HTML,CSS,Javascript)-->
+<!DOCTYPE HTML>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Concentration Game</title>
+    <link rel="stylesheet" type="text/css" href="style.css">	<!--get the css file-->
+    <script>
+        function colorChanger(object) {		<!-- function for changing the cards color and order the player to be able to see the element of the card-->
+            if(object.style.backgroundColor == "black"){
+                object.style.backgroundColor = "white";
+            }else{
+                object.style.backgroundColor = "black";
+            }
+        }
+    </script>
+    <script>
+        var clickCounter=0;
+        var counter=0;
+        function attemptCounter(){		<!--function for counting the tries of the player-->
+            counter++;
+            if(counter%2==0)			<!--increase counter only when the user chooses a pair of cards not increasing per card flipped-->
+                clickCounter++;
+			var triesTd=document.getElementById("tries");		<!--change the counter value on screen-->
+            triesTd.innerHTML=clickCounter;
+        }
+    </script>
+    <script>
+        var minsLeft=0;
+        var secLeft=0;
+        var tick=1000;		<!--run clock function per 1 second-->
+        var intervalID;
+        function clock(){		<!--clock function for increasing minutes/seconds and displaying to browser-->
+            var left=document.getElementById("timer")
+            secLeft++;
+            if(secLeft>59){
+                secLeft=0;
+                minsLeft++;
+            }
+            if(secLeft>=10){
+                left.innerHTML="Time counter: "+minsLeft+":"+secLeft;
+            }else{
+                left.innerHTML="Time counter: "+minsLeft+":0"+secLeft;
+            }
+        }
+        function startNewGame(){		<!--when user stars new game, set 0 to score,minutes,seconds,clickCounter,display them and start clock() interval run per 1 second-->
+			var scoreTd=document.getElementById("score");
+			clearInterval(intervalID);
+			score=0;
+			secLeft=0;
+			minsLeft=0;
+			clickCounter=0;
+			intervalID=window.setInterval(clock,tick);
+			var scoreTd=document.getElementById("score");
+			var triesTd=document.getElementById("tries");
+			triesTd.innerHTML=clickCounter;
+            scoreTd.innerHTML=score;
+        }
+    </script>
+    <script>
+        var resultArray=[];
+        function check(object){		<!--check the cards selected, if the same, keep them turned and disable onclick funtions if not the same flip them again-->
+            position++;
+            resultArray[position]=object;		<!--object represent each td card selected by user-->
+            if(position%2==0){
+                if(resultArray[position-1].innerHTML!=resultArray[position].innerHTML){
+                    setTimeout(colorChanger,500,resultArray[position-1]);		<!--delay on turn not same cards so the player can see the choices he made-->
+                    setTimeout(colorChanger,500,resultArray[position]);
+                }if(resultArray[position-1].innerHTML==resultArray[position].innerHTML && !(resultArray[position-1]===resultArray[position])){
+                    resultArray[position-1].setAttribute("onclick","");
+                    resultArray[position].setAttribute("onclick","");
+                    score++;			<!--when same cards selected increase score-->
+					var scoreTd=document.getElementById("score");
+					scoreTd.innerHTML=score;
+                }
+                if(score==26){
+                    endGame();		<!--when all cards have been flipped endGame-->
+                }
+            }
+            console.log(score);
+        }
+    </script>
+    <script>
+        function endGame(){
+            clearInterval(intervalID);		<!--stop clock() execution-->
+            var cards=document.getElementsByTagName("td");
+            for(var i=0;i<cards.length;i++){
+                cards[i].setAttribute("onclick","");		<!-- disable all onclick functions-->
+            }
+                alert("Congratulations!!! You found all 26 pairs. Your time is "+minsLeft+":"+secLeft+". Your total tries were "+clickCounter+".");	<!--alert user about the end of the game-->
+        }
+    </script>
+    <script>
+        var counter=0;		<!--game_table is created only on the first time the user run the game-->
+        var score=0;		
+        var position=0;
+        function playGame(){		<!-- playGame funtion creates the game table and append to the td element the onclick functions attributes-->
+            if(counter==0){
+                counter++;
+                table=document.getElementById("game_table");
+                for (var i = 0; i < 4; i++){
+                    var tr = document.createElement('tr');
+                    for(var j=0;j<13;j++){
+                        var td = document.createElement('td');
+                        td.appendChild(document.createTextNode("empty"));		<!--set "empty" as the text inside td elements-->
+                        tr.appendChild(td);
+                    }
+                    table.appendChild(tr);
+                }
+                spread();
+            }else {
+                spread();		<!--after the first game, the table has been created and the symbols are just rearranged to different positions-->
+            }
+            var triesTd=document.getElementById("tries");		<!--display clickCounter and score values-->
+            triesTd.innerHTML=clickCounter;
+			var scoreTd=document.getElementById("score");
+            scoreTd.innerHTML=score;
+        }
+    </script>
+    <script>
+        function spread(){		<!--on each run of the spread() function a the symbolArray is filled with number from 1-13 , these are the number used as the card symbols-->
+            var symbolArray=[];
+            var symbolAmount=[];	<!--counter for making sure each number exist only one time in the symbolArray-->
+            var massCounter=52;
+            for(var i=1;i<=52;i++){
+                symbolArray[i]=0;
+            }
+            for(var i=1;i<=13;i++){
+                symbolAmount[i]=0;
+            }
+            for(var i=1;i<=symbolArray.length;i++){
+                do{
+                    var value=Math.floor(Math.random()*13+1);
+                }while(symbolAmount[value]>=4 && massCounter>0);
+                if(symbolArray[i]==0 && symbolAmount[value]<4){
+                    symbolArray[i]=value;
+                    symbolAmount[value]++;
+                    massCounter--;
+                }
+            }
+            var cards=table.getElementsByTagName("td");
+            for(var i=1;i<symbolArray.length;i++){
+                cards[i-1].innerHTML=symbolArray[i];
+                cards[i-1].setAttribute("style","background-color:black;");		<!--set initial card color to black-->
+                cards[i-1].setAttribute("onclick","colorChanger(this);check(this);attemptCounter();");		<!-- set onclick functions-->
+            }
+            console.log(symbolArray);
+            console.log(symbolAmount);
+        }
+    </script>
+    <script>
+    </script>
+</head>
+<body>
+<h1>Welcome to the online <span class="span1">Concentration Game...</span><img style="float:right;" src="https://lh3.ggpht.com/L91qxOnnyw0-2W7Oa-opLyz7V1zSCNM16W3AyCz26mJnqqBtxbo11pEDXQq6jtPxX0Q=w300"></h1>
+<br>
+<div id="text_content">
+    <h3 style="text-decoration:underline">The Game</h3>
+    <p>
+        <b>Concentration</b>, also known as Match Match, Memory, Pelmanism, Shinkei-suijaku, Pexeso or simply Pairs, is a card game in which all of the cards are laid face down on a surface and two cards are flipped
+        face up over each turn. The object of the game is to turn over pairs of matching cards.
+        Concentration can be played with any number of players or as solitaire and is an especially good game for young children, though adults may find it challenging and stimulating as well.
+        The scheme is often used in quiz shows and can be employed as an educational game.
+    </p>
+    <h3 style="text-decoration:underline">The Rules</h3>
+    <p>
+        <ins>Any deck of playing cards may be used</ins>, although there are special cards available.
+        The rules given here are for a standard deck of 52 cards, which are normally laid face down in four rows of 13 cards each.
+        In turn each player chooses two cards and turns them face up.
+        If they are the same then that player wins the pair and plays again. If they are not of the same, they are turned face down again.
+        The game ends when the last pair has been picked up. The winner is the person with the most pairs, and there may be a tie for first place.
+    </p>
+</div>
+<div id="game">
+    <div id="gameButton">
+        <button name="start_button" onclick="playGame();startNewGame();">Start Game</button>
+    </div>
+    </br></br>
+    <div  id="game_stats">		<!--area with game elements-->
+        <h2 id="timer" style="float:left;"></h2>	<!--area with the timer-->
+		<table id="statTable" style="float:right;" border="0px" width="15%;">	<!--table for displaying game stats-->
+			<tr>
+				<td>Total Tries:</td>
+				<td id="tries"></td>
+			</tr>
+			<tr>
+				<td>Score:</td>
+				<td id="score"></td>
+			</tr>
+		</table>	<!----------------------->
+    </div>
+	</br></br></br></br>
+    <table id="game_table" width="100%" height="200" cellpadding="20" cellspacing="25">
+    </table>		<!--the card deck created dynamically using javascript code above-->
+</div>
+</body>
+</html>
